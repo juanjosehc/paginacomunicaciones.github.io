@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
             // --- CONSTANTES Y VARIABLES GLOBALES ---
-            const CORRECT_PASSWORD = '1234';
+            const CORRECT_PASSWORD = '3062785';
             let db;
 
             // --- SELECTORES DEL DOM ---
