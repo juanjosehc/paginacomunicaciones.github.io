@@ -1,6 +1,13 @@
+<<<<<<< HEAD
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+=======
+document.addEventListener('DOMContentLoaded', () => {
+            // --- CONSTANTES Y VARIABLES GLOBALES ---
+            const CORRECT_PASSWORD = '3062785';
+            let db;
+>>>>>>> d908a478991abce4612ea5c2a31174429df1679b
 
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -146,6 +153,7 @@
                 }
             });
 
+<<<<<<< HEAD
             async function main() {
                 try {
                     if (typeof __initial_auth_token !== 'undefined') {
@@ -181,3 +189,8 @@
 
             main();
         });
+=======
+            // --- INICIALIZACIÓN ---
+            renderAllFiles();
+        });
+>>>>>>> d908a478991abce4612ea5c2a31174429df1679b
