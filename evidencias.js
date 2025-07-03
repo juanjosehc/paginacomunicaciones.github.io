@@ -1,9 +1,16 @@
-document.addEventListener('DOMContentLoaded', () => {
-            // --- CONSTANTES Y VARIABLES GLOBALES ---
-            const CORRECT_PASSWORD = '1234';
-            let db;
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-            // --- SELECTORES DEL DOM ---
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const CORRECT_PASSWORD = '1234';
             const uploadForm = document.getElementById('upload-form');
             const personSelect = document.getElementById('person-select');
             const fileInput = document.getElementById('file-input');
@@ -11,89 +18,69 @@ document.addEventListener('DOMContentLoaded', () => {
             const emptyMessage = document.getElementById('empty-message');
             const errorMessage = document.getElementById('error-message');
 
-            // --- MANEJO DE LA BASE DE DATOS (INDEXEDDB) ---
-            function getDB() {
-                return new Promise((resolve, reject) => {
-                    if (db) return resolve(db);
-                    const request = indexedDB.open('EvidenciasDB', 1);
-                    request.onerror = () => reject('Error al abrir la base de datos');
-                    request.onupgradeneeded = (event) => {
-                        event.target.result.createObjectStore('evidencias', { keyPath: 'id', autoIncrement: true });
-                    };
-                    request.onsuccess = (event) => {
-                        db = event.target.result;
-                        resolve(db);
-                    };
-                });
-            }
+            const collectionPath = `artifacts/${appId}/public/data/evidencias-proyecto`;
 
-            // --- LÓGICA DE AUTENTICACIÓN ---
             function authenticate() {
                 const password = prompt("Para realizar esta acción, por favor ingresa la contraseña:");
-                if (password === null) {
-                    return false; // El usuario canceló
-                }
-                if (password === CORRECT_PASSWORD) {
-                    return true; // Contraseña correcta
-                }
-                // Contraseña incorrecta
+                if (password === null) return false;
+                if (password === CORRECT_PASSWORD) return true;
                 errorMessage.textContent = 'Contraseña incorrecta. La acción fue denegada.';
                 errorMessage.classList.remove('hidden');
                 setTimeout(() => errorMessage.classList.add('hidden'), 3000);
                 return false;
             }
 
-            // --- LÓGICA DE ARCHIVOS ---
+            function fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            }
+
             async function addFile(file, person) {
                 try {
-                    const db = await getDB();
-                    const transaction = db.transaction(['evidencias'], 'readwrite');
-                    const store = transaction.objectStore('evidencias');
-                    const fileData = { name: file.name, type: file.type, size: file.size, person: person, file: file };
-                    const request = store.add(fileData);
-                    
-                    request.onsuccess = () => {
-                        uploadForm.reset();
-                        renderAllFiles();
-                    };
-                    request.onerror = () => {
-                        errorMessage.textContent = 'Error al guardar el archivo.';
-                        errorMessage.classList.remove('hidden');
-                    };
+                    const fileBase64 = await fileToBase64(file);
+                    await addDoc(collection(db, collectionPath), {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        person: person,
+                        fileData: fileBase64,
+                        createdAt: new Date()
+                    });
+                    uploadForm.reset();
                 } catch (error) {
-                    console.error("Error en addFile:", error);
+                    console.error("Error al añadir el archivo: ", error);
+                    errorMessage.textContent = 'Error al guardar el archivo.';
+                    errorMessage.classList.remove('hidden');
                 }
             }
 
             async function deleteFile(fileId) {
                 try {
-                    const db = await getDB();
-                    const transaction = db.transaction(['evidencias'], 'readwrite');
-                    const store = transaction.objectStore('evidencias');
-                    const request = store.delete(fileId);
-                    request.onsuccess = () => renderAllFiles();
+                    await deleteDoc(doc(db, collectionPath, fileId));
                 } catch (error) {
-                    console.error("Error en deleteFile:", error);
+                    console.error("Error al eliminar el archivo: ", error);
                 }
             }
 
-            // --- MANEJO DE LA INTERFAZ DE USUARIO (UI) ---
             function createFileCard(fileData) {
                 const card = document.createElement('div');
                 card.className = 'file-card';
                 card.dataset.id = fileData.id;
-                const fileURL = URL.createObjectURL(fileData.file);
 
-                const previewElement = fileData.file.type.startsWith('image/')
-                    ? `<img src="${fileURL}" class="file-preview-img" alt="Vista previa de ${fileData.name}">`
-                    : `<div class="file-preview-icon"><i class="fas fa-4x ${getFileIconClass(fileData.file.type, fileData.name)}"></i></div>`;
+                const previewElement = fileData.type.startsWith('image/')
+                    ? `<img src="${fileData.fileData}" class="file-preview-img" alt="Vista previa de ${fileData.name}">`
+                    : `<div class="file-preview-icon"><i class="fas fa-4x ${getFileIconClass(fileData.type, fileData.name)}"></i></div>`;
 
                 card.innerHTML = `
                     <button class="delete-button" title="Eliminar archivo"><i class="fas fa-trash-alt"></i></button>
                     ${previewElement}
                     <p class="file-name" title="${fileData.name}">${fileData.name}</p>
                     <p class="file-size">${(fileData.size / 1024).toFixed(2)} KB</p>
-                    <a href="${fileURL}" target="_blank" class="view-button" download="${fileData.name}">Visualizar</a>
+                    <a href="${fileData.fileData}" target="_blank" class="view-button" download="${fileData.name}">Visualizar</a>
                 `;
 
                 card.querySelector('.delete-button').addEventListener('click', () => {
@@ -105,32 +92,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 return card;
             }
 
-            async function renderAllFiles() {
-                try {
-                    const db = await getDB();
-                    const transaction = db.transaction(['evidencias'], 'readonly');
-                    const store = transaction.objectStore('evidencias');
-                    const request = store.getAll();
-
-                    request.onsuccess = () => {
-                        const files = request.result;
-                        document.querySelectorAll('.file-gallery').forEach(g => g.innerHTML = '');
-                        if (files && files.length > 0) {
-                            files.forEach(fileData => {
-                                const personId = fileData.person.replace(/\s+/g, '-').toLowerCase();
-                                const galleryId = `gallery-${personId}`;
-                                const targetGallery = document.getElementById(galleryId);
-                                if (targetGallery) {
-                                    targetGallery.appendChild(createFileCard(fileData));
-                                }
-                            });
+            function renderFiles(files) {
+                document.querySelectorAll('.file-gallery').forEach(g => g.innerHTML = '');
+                if (files && files.length > 0) {
+                    files.forEach(fileData => {
+                        const personId = fileData.person.replace(/\s+/g, '-').toLowerCase();
+                        const galleryId = `gallery-${personId}`;
+                        const targetGallery = document.getElementById(galleryId);
+                        if (targetGallery) {
+                            targetGallery.appendChild(createFileCard(fileData));
                         }
-                        updateGalleriesVisibility(files.length);
-                    };
-                } catch (error) {
-                    errorMessage.textContent = 'No se pudieron cargar los archivos.';
-                    errorMessage.classList.remove('hidden');
+                    });
                 }
+                updateGalleriesVisibility(files.length);
             }
 
             function updateGalleriesVisibility(fileCount) {
@@ -156,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return 'fa-file';
             }
 
-            // --- LÓGICA PRINCIPAL Y EVENTOS ---
             uploadForm.addEventListener('submit', (event) => {
                 event.preventDefault();
                 const person = personSelect.value;
@@ -173,6 +146,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // --- INICIALIZACIÓN ---
-            renderAllFiles();
+            async function main() {
+                try {
+                    if (typeof __initial_auth_token !== 'undefined') {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("Error de autenticación:", error);
+                    errorMessage.textContent = "Fallo en la autenticación.";
+                    errorMessage.classList.remove('hidden');
+                }
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    console.log("Usuario autenticado:", user.uid);
+                    onSnapshot(collection(db, collectionPath), (querySnapshot) => {
+                        const files = [];
+                        querySnapshot.forEach((doc) => {
+                            files.push({ id: doc.id, ...doc.data() });
+                        });
+                        renderFiles(files);
+                    }, (error) => {
+                        console.error("Error en el listener de snapshot:", error);
+                        errorMessage.textContent = "Error al leer de la base de datos. Verifica los permisos.";
+                        errorMessage.classList.remove('hidden');
+                    });
+                } else {
+                    console.log("Usuario no autenticado.");
+                }
+            });
+
+            main();
         });
