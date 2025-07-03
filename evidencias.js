@@ -1,31 +1,28 @@
-<<<<<<< HEAD
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-=======
 document.addEventListener('DOMContentLoaded', () => {
-            // --- CONSTANTES Y VARIABLES GLOBALES ---
-            const CORRECT_PASSWORD = '3062785';
-            let db;
->>>>>>> d908a478991abce4612ea5c2a31174429df1679b
+            // --- CONFIGURACIÓN DE SUPABASE ---
+            const SUPABASE_URL = 'https://hzdhgjpplcpbquxgrawe.supabase.co'; 
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6ZGhnanBwbGNwYnF1eGdyYXdlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTUxNjQ1NSwiZXhwIjoyMDY3MDkyNDU1fQ.a8Za3GErBXBJy4FBYRSXA-8U7N_CgFiBqi2mvClhnG0';
 
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            if (!SUPABASE_URL.includes('supabase.co') || !SUPABASE_ANON_KEY.startsWith('ey')) {
+                 const errorMessage = document.getElementById('error-message');
+                 errorMessage.textContent = "Por favor, configura tus credenciales de Supabase en el script.";
+                 errorMessage.classList.remove('hidden');
+                 return;
+            }
+            
+            const { createClient } = supabase;
+            const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        document.addEventListener('DOMContentLoaded', () => {
             const CORRECT_PASSWORD = '1234';
             const uploadForm = document.getElementById('upload-form');
             const personSelect = document.getElementById('person-select');
             const fileInput = document.getElementById('file-input');
+            const submitBtn = document.querySelector('.submit-button');
             const galleriesSection = document.getElementById('galleries-section');
             const emptyMessage = document.getElementById('empty-message');
             const errorMessage = document.getElementById('error-message');
-
-            const collectionPath = `artifacts/${appId}/public/data/evidencias-proyecto`;
+            const BUCKET_NAME = 'evidencias';
+            const TABLE_NAME = 'evidencias';
 
             function authenticate() {
                 const password = prompt("Para realizar esta acción, por favor ingresa la contraseña:");
@@ -37,37 +34,73 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             }
 
-            function fileToBase64(file) {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = error => reject(error);
-                });
+            // FIX: New function to sanitize file names
+            function sanitizeFileName(fileName) {
+                // Replaces spaces and special characters with underscores
+                return fileName.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_');
             }
 
             async function addFile(file, person) {
+                if (!authenticate()) return;
+                
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
+                
                 try {
-                    const fileBase64 = await fileToBase64(file);
-                    await addDoc(collection(db, collectionPath), {
-                        name: file.name,
-                        type: file.type,
-                        size: file.size,
-                        person: person,
-                        fileData: fileBase64,
-                        createdAt: new Date()
-                    });
+                    const sanitizedFileName = sanitizeFileName(file.name);
+                    const filePath = `public/${Date.now()}-${sanitizedFileName}`;
+                    
+                    const { error: uploadError } = await supabaseClient.storage
+                        .from(BUCKET_NAME)
+                        .upload(filePath, file);
+
+                    if (uploadError) throw uploadError;
+
+                    const { data: urlData } = supabaseClient.storage
+                        .from(BUCKET_NAME)
+                        .getPublicUrl(filePath);
+
+                    const { error: insertError } = await supabaseClient
+                        .from(TABLE_NAME)
+                        .insert({
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            person: person,
+                            download_url: urlData.publicUrl,
+                            storage_path: filePath
+                        });
+
+                    if (insertError) throw insertError;
+
                     uploadForm.reset();
+
                 } catch (error) {
                     console.error("Error al añadir el archivo: ", error);
                     errorMessage.textContent = 'Error al guardar el archivo.';
                     errorMessage.classList.remove('hidden');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-upload"></i> Subir Evidencia';
                 }
             }
 
-            async function deleteFile(fileId) {
+            async function deleteFile(fileId, storagePath) {
+                if (!authenticate()) return;
                 try {
-                    await deleteDoc(doc(db, collectionPath, fileId));
+                    const { error: storageError } = await supabaseClient.storage
+                        .from(BUCKET_NAME)
+                        .remove([storagePath]);
+                    
+                    if (storageError) throw storageError;
+
+                    const { error: dbError } = await supabaseClient
+                        .from(TABLE_NAME)
+                        .delete()
+                        .eq('id', fileId);
+
+                    if (dbError) throw dbError;
+
                 } catch (error) {
                     console.error("Error al eliminar el archivo: ", error);
                 }
@@ -79,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.dataset.id = fileData.id;
 
                 const previewElement = fileData.type.startsWith('image/')
-                    ? `<img src="${fileData.fileData}" class="file-preview-img" alt="Vista previa de ${fileData.name}">`
+                    ? `<img src="${fileData.download_url}" class="file-preview-img" alt="Vista previa de ${fileData.name}">`
                     : `<div class="file-preview-icon"><i class="fas fa-4x ${getFileIconClass(fileData.type, fileData.name)}"></i></div>`;
 
                 card.innerHTML = `
@@ -87,13 +120,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${previewElement}
                     <p class="file-name" title="${fileData.name}">${fileData.name}</p>
                     <p class="file-size">${(fileData.size / 1024).toFixed(2)} KB</p>
-                    <a href="${fileData.fileData}" target="_blank" class="view-button" download="${fileData.name}">Visualizar</a>
+                    <a href="${fileData.download_url}" target="_blank" class="view-button" download="${fileData.name}">Visualizar</a>
                 `;
 
                 card.querySelector('.delete-button').addEventListener('click', () => {
-                    if (authenticate()) {
-                        deleteFile(fileData.id);
-                    }
+                    deleteFile(fileData.id, fileData.storage_path);
                 });
 
                 return card;
@@ -147,50 +178,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 errorMessage.classList.add('hidden');
-                
-                if (authenticate()) {
-                    addFile(file, person);
-                }
+                addFile(file, person);
             });
 
-<<<<<<< HEAD
-            async function main() {
-                try {
-                    if (typeof __initial_auth_token !== 'undefined') {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                } catch (error) {
-                    console.error("Error de autenticación:", error);
-                    errorMessage.textContent = "Fallo en la autenticación.";
+            const channel = supabaseClient.channel('realtime_evidencias')
+                .on('postgres_changes', { event: '*', schema: 'public', table: TABLE_NAME }, async (payload) => {
+                    console.log('Cambio recibido!', payload);
+                    const { data, error } = await supabaseClient.from(TABLE_NAME).select('*').order('created_at');
+                    if(data) renderFiles(data);
+                })
+                .subscribe();
+
+            async function initialLoad() {
+                const { data, error } = await supabaseClient.from(TABLE_NAME).select('*').order('created_at');
+                if (error) {
+                    console.error("Error en la carga inicial:", error);
+                    errorMessage.textContent = "No se pudieron cargar las evidencias.";
                     errorMessage.classList.remove('hidden');
+                } else {
+                    renderFiles(data);
                 }
             }
 
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    console.log("Usuario autenticado:", user.uid);
-                    onSnapshot(collection(db, collectionPath), (querySnapshot) => {
-                        const files = [];
-                        querySnapshot.forEach((doc) => {
-                            files.push({ id: doc.id, ...doc.data() });
-                        });
-                        renderFiles(files);
-                    }, (error) => {
-                        console.error("Error en el listener de snapshot:", error);
-                        errorMessage.textContent = "Error al leer de la base de datos. Verifica los permisos.";
-                        errorMessage.classList.remove('hidden');
-                    });
-                } else {
-                    console.log("Usuario no autenticado.");
-                }
-            });
-
-            main();
+            initialLoad();
         });
-=======
-            // --- INICIALIZACIÓN ---
-            renderAllFiles();
-        });
->>>>>>> d908a478991abce4612ea5c2a31174429df1679b
