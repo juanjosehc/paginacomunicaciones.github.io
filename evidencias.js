@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { createClient } = supabase;
             const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            const CORRECT_PASSWORD = '1234';
+            const CORRECT_PASSWORD = '3062785';
             const uploadForm = document.getElementById('upload-form');
             const personSelect = document.getElementById('person-select');
             const fileInput = document.getElementById('file-input');
