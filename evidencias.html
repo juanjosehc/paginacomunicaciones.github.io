@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evidencias de Asignatura</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="evidencias.css">
+
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="inicio.html" class="navbar-brand">El Poder de la Kinésica</a>
+        <div class="nav-links">
+            <a href="inicio.html" class="navbar-link">
+                <i class="fas fa-home"></i>
+                <span>Inicio</span>
+            </a>
+            <a href="integrantes.html" class="navbar-link">
+                <i class="fas fa-users"></i>
+                <span>Ver Perfiles</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="header">
+            <h1>Gestor de Evidencias</h1>
+            <p>Sube y visualiza los trabajos de la asignatura</p>
+        </header>
+        <main>
+            <section class="upload-section">
+                <form id="upload-form">
+                    <div class="form-group">
+                        <label for="person-select">Asignar a:</label>
+                        <select id="person-select" class="person-select" required>
+                            <option value="" disabled selected>Seleccionar una persona...</option>
+                            <option value="Juan Hernandez">Juan Hernandez</option>
+                            <option value="Camila Ceballos">Camila Ceballos</option>
+                            <option value="Samuel Carmona">Samuel Carmona</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                         <label for="file-input">Seleccionar archivo:</label>
+                        <input type="file" id="file-input" required class="file-input"/>
+                    </div>
+                    <button type="submit" class="submit-button">
+                        <i class="fas fa-upload"></i>
+                        <span>Subir Evidencia</span>
+                    </button>
+                    <p id="error-message" class="error-message hidden"></p>
+                </form>
+            </section>
+            <section id="galleries-section" class="galleries-section hidden">
+                <h2>Archivos Subidos</h2>
+                <div id="galleries-container">
+                    <div id="section-juan-hernandez" class="person-gallery-section hidden">
+                        <h3>Juan Hernandez</h3>
+                        <div class="file-gallery" id="gallery-juan-hernandez"></div>
+                    </div>
+                    <div id="section-camila-ceballos" class="person-gallery-section hidden">
+                        <h3>Camila Ceballos</h3>
+                        <div class="file-gallery" id="gallery-camila-ceballos"></div>
+                    </div>
+                    <div id="section-samuel-carmona" class="person-gallery-section hidden">
+                        <h3>Samuel Carmona</h3>
+                        <div class="file-gallery" id="gallery-samuel-carmona"></div>
+                    </div>
+                </div>
+            </section>
+            <p id="empty-message" class="empty-message">Aún no se han subido archivos.</p>
+        </main>
+    </div>
+
+    <script src="evidencias.js"></script>
+</body>
+</html>
