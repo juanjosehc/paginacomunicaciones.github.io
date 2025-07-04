@@ -8,8 +8,11 @@
     <link rel="icon" href="img/icono.png" type="img/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="integrantes.css">
-
-</head>
+    
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <body>
 
@@ -24,7 +27,11 @@
                 <i class="fas fa-folder-open"></i>
                 <span>Evidencias</span>
             </a>
-            <a href="reflexiones.html" class="navbar-link active">
+            <a href="integrantes.html" class="navbar-link active">
+                <i class="fas fa-users"></i>
+                <span>Perfiles</span>
+            </a>
+            <a href="reflexiones.html" class="navbar-link">
                 <i class="fas fa-comment-dots"></i>
                 <span>Reflexiones</span>
             </a>
@@ -33,55 +40,53 @@
 
     <div class="container">
 
-        <header class="header">
+        <header class="header fade-in">
             <h1>Conoce al Equipo</h1>
             <p>Aquí puedes encontrar más información sobre los integrantes del proyecto.</p>
         </header>
-
+        <br>
         <main>
             <div class="profiles-grid">
 
                 <!-- Perfil de Juan Hernandez -->
-                <div id="juan-hernandez" class="profile-card">
-                    <img src="img/JuanFoto.jpg" alt="Foto de Juan Hernandez"
-                        class="profile-photo">
+                <div class="profile-card fade-in">
+                    <img src="img/JuanFoto.jpg" alt="Foto de Juan Hernandez" class="profile-photo">
                     <div class="profile-info">
                         <h2 class="profile-name">Juan Hernandez</h2>
                         <p class="profile-bio">
-                            Soy Juan José Hernandez, soy estudiante de Tecnología de Desarrollo de software, me gusta
-                            mucho
-                            la programación y me gustan las motos, mi pasatiempo favorito es viajar en motos y conocer
-                            pueblos,
-                            en mis tiempos libres me gusta escuchar música, estar con amigos y jugar videojuegos
+                            Soy Juan José Hernandez, estudiante de Tecnología de Desarrollo de software. Me apasiona la programación y las motos. Mi pasatiempo favorito es viajar y conocer pueblos. En mis tiempos libres me gusta escuchar música y jugar videojuegos.
                         </p>
+                        <div class="social-links">
+                            <a href="https://www.instagram.com/simplyjose_c?igsh=MXIxdzAzeGh0NXVlNw==" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Perfil de Camila Ceballos -->
-                <div id="camila-ceballos" class="profile-card">
-                    <img src="img/CamilaFoto.jpg" alt="Foto de Camila Ceballos"
-                        class="profile-photo">
+                <div class="profile-card fade-in">
+                    <img src="img/CamilaFoto.jpg" alt="Foto de Camila Ceballos" class="profile-photo">
                     <div class="profile-info">
                         <h2 class="profile-name">Camila Ceballos</h2>
                         <p class="profile-bio">
-                            Soy Camila Ceballos, tengo 18 años y me gusta todo lo relacionado con la tecnología, actualmente estudio análisis y desarrollo de software en el Sena. 
-                            Me gusta aprender cosas nuevas y busco mejorar en lo que hago.
+                            Soy Camila Ceballos, tengo 18 años y me gusta todo lo relacionado con la tecnología. Actualmente estudio análisis y desarrollo de software en el Sena. Me gusta aprender cosas nuevas y busco mejorar en lo que hago.
                         </p>
+                        <div class="social-links">
+                            <a href="https://www.instagram.com/cami_19100?igsh=MWoyb3RneWlucHd5Ng==" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Perfil de Samuel Carmona -->
-                <div id="samuel-carmona" class="profile-card">
-                    <img src="img/SamuelFoto.jfif" alt="Foto de Samuel Carmona"
-                        class="profile-photo">
+                <div class="profile-card fade-in">
+                    <img src="img/SamuelFoto.jfif" alt="Foto de Samuel Carmona" class="profile-photo">
                     <div class="profile-info">
                         <h2 class="profile-name">Samuel Carmona</h2>
                         <p class="profile-bio">
-                            Soy Samuel Carmona Florez, estudiante de Análisis y Desarrollo de Software. Me apasiona la
-                            tecnología, el diseño web y la programación. Me considero una persona responsable,
-                            autodidacta y comprometida con mis proyectos. Siempre estoy en busca de nuevos aprendizajes
-                            que me permitan crecer personal y profesionalmente.
+                            Soy Samuel Carmona Florez, estudiante de Análisis y Desarrollo de Software. Me apasiona la tecnología, el diseño web y la programación. Me considero una persona responsable, autodidacta y comprometida con mis proyectos.
                         </p>
+                        <div class="social-links">
+                            <a href="https://www.instagram.com/carmona13_09?igsh=MWI4MnlsZnZndTZuaA==" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        </div>
                     </div>
                 </div>
 
@@ -89,7 +94,7 @@
         </main>
 
     </div>
-
+    
+    <script src="integrantes.js"></script>
 </body>
-
 </html>

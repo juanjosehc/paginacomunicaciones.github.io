@@ -1,4 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
+            const faders = document.querySelectorAll('.fade-in');
+            const appearOptions = {
+                threshold: 0.2,
+                rootMargin: "0px 0px -50px 0px"
+            };
+            const appearOnScroll = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, appearOptions);
+            faders.forEach(fader => {
+                appearOnScroll.observe(fader);
+            });
+
             // --- CONFIGURACIÓN DE SUPABASE ---
             const SUPABASE_URL = 'https://hzdhgjpplcpbquxgrawe.supabase.co'; 
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6ZGhnanBwbGNwYnF1eGdyYXdlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTUxNjQ1NSwiZXhwIjoyMDY3MDkyNDU1fQ.a8Za3GErBXBJy4FBYRSXA-8U7N_CgFiBqi2mvClhnG0';
@@ -34,9 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             }
 
-            // FIX: New function to sanitize file names
             function sanitizeFileName(fileName) {
-                // Replaces spaces and special characters with underscores
                 return fileName.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_');
             }
 
@@ -115,12 +130,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     ? `<img src="${fileData.download_url}" class="file-preview-img" alt="Vista previa de ${fileData.name}">`
                     : `<div class="file-preview-icon"><i class="fas fa-4x ${getFileIconClass(fileData.type, fileData.name)}"></i></div>`;
 
+                const isOfficeFile = fileData.name.endsWith('.docx') || fileData.name.endsWith('.pptx') || fileData.name.endsWith('.xlsx');
+                const viewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(fileData.download_url)}`;
+                const finalUrl = isOfficeFile ? viewerUrl : fileData.download_url;
+                const downloadAttribute = isOfficeFile ? '' : `download="${fileData.name}"`;
+
                 card.innerHTML = `
                     <button class="delete-button" title="Eliminar archivo"><i class="fas fa-trash-alt"></i></button>
                     ${previewElement}
                     <p class="file-name" title="${fileData.name}">${fileData.name}</p>
                     <p class="file-size">${(fileData.size / 1024).toFixed(2)} KB</p>
-                    <a href="${fileData.download_url}" target="_blank" class="view-button" download="${fileData.name}">Visualizar</a>
+                    <a href="${finalUrl}" target="_blank" class="view-button" ${downloadAttribute}>Visualizar</a>
                 `;
 
                 card.querySelector('.delete-button').addEventListener('click', () => {

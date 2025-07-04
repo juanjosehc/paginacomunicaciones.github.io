@@ -7,23 +7,32 @@
     
     <link rel="icon" href="img/icono.png" type="img/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="evidencias.css">
 
 </head>
 <body>
 
-    <nav class="navbar">
+    <nav class="navbar" id="navbar">
         <a href="index.html" class="navbar-brand">El Poder de la Kinésica</a>
         <div class="nav-links">
             <a href="index.html" class="navbar-link">
                 <i class="fas fa-home"></i>
                 <span>Inicio</span>
             </a>
+            <a href="evidencias.html" class="navbar-link active">
+                <i class="fas fa-folder-open"></i>
+                <span>Evidencias</span>
+            </a>
             <a href="integrantes.html" class="navbar-link">
                 <i class="fas fa-users"></i>
                 <span>Ver Perfiles</span>
             </a>
-            <a href="reflexiones.html" class="navbar-link active">
+            <a href="reflexiones.html" class="navbar-link">
                 <i class="fas fa-comment-dots"></i>
                 <span>Reflexiones</span>
             </a>
@@ -31,12 +40,13 @@
     </nav>
 
     <div class="container">
-        <header class="header">
+        <header class="header fade-in">
             <h1>Gestor de Evidencias</h1>
             <p>Sube y visualiza los trabajos de la asignatura</p>
         </header>
         <main>
-            <section class="upload-section">
+            <section class="upload-section fade-in">
+                <h2>Añadir Nueva Evidencia</h2>
                 <form id="upload-form">
                     <div class="form-group">
                         <label for="person-select">Asignar a:</label>
@@ -58,7 +68,7 @@
                     <p id="error-message" class="error-message hidden"></p>
                 </form>
             </section>
-            <section id="galleries-section" class="galleries-section hidden">
+            <section id="galleries-section" class="galleries-section hidden fade-in">
                 <h2>Archivos Subidos</h2>
                 <div id="galleries-container">
                     <div id="section-juan-hernandez" class="person-gallery-section hidden">
@@ -75,11 +85,10 @@
                     </div>
                 </div>
             </section>
-            <p id="empty-message" class="empty-message">Aún no se han subido archivos.</p>
+            <p id="empty-message" class="empty-message fade-in">Aún no se han subido archivos.</p>
         </main>
     </div>
-
-    <!-- Supabase SDK -->
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="evidencias.js"></script>
 </body>

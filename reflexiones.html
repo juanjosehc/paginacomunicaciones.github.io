@@ -6,11 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reflexiones del Equipo</title>
 
-    <!-- Librería Font Awesome para los íconos -->
     <link rel="icon" href="img/icono.png" type="img/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="reflexiones.css">
 
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="reflexiones.css">
 
 </head>
 
@@ -31,13 +34,16 @@
                 <i class="fas fa-users"></i>
                 <span>Perfiles</span>
             </a>
-
+            <a href="reflexiones.html" class="navbar-link active">
+                <i class="fas fa-comment-dots"></i>
+                <span>Reflexiones</span>
+            </a>
         </div>
     </nav>
 
     <div class="container">
 
-        <header class="header">
+        <header class="header fade-in">
             <h1>Reflexiones del Equipo</h1>
             <p>Un espacio para compartir nuestras ideas y aprendizajes sobre el fascinante mundo de la comunicación no
                 verbal.</p>
@@ -47,24 +53,27 @@
             <div class="reflections-grid">
 
                 <!-- Reflexión de Juan Hernandez -->
-                <div id="juan-hernandez" class="reflection-card">
+                <div class="reflection-card fade-in">
                     <div class="reflection-header">
                         <img src="img/JuanFoto.jpg" alt="Foto de Juan Hernandez" class="reflection-photo">
                         <h2 class="reflection-name">Juan Hernandez</h2>
                     </div>
                     <p class="reflection-text">
-                        La comunicación asertiva es el puente que conecta la honestidad de nuestros pensamientos y
-                        sentimientos con el respeto por los demás. No se trata de imponer nuestra voluntad ni de ceder
-                        constantemente ante la de otros, sino de encontrar un equilibrio saludable donde expresamos
-                        nuestras necesidades de manera clara, directa y calmada. Al practicar la asertividad, reclamamos
-                        nuestro derecho a ser escuchados y, al mismo tiempo, validamos el derecho de los demás a tener
-                        sus propias perspectivas, fomentando así relaciones más auténticas y equitativas, libres de
-                        resentimientos y malentendidos.
+                        A lo largo de mi vida he aprendido que la comunicación asertiva no se trata de tener siempre la
+                        razón, sino de encontrar el equilibrio para expresar lo que siento y necesito, sin pasar por
+                        encima de los demás, pero también sin permitir que pasen por encima de mí. Antes, o me guardaba
+                        las cosas para evitar un conflicto o explotaba con rabia, y ninguna de las dos me traía
+                        paz. Un ejemplo tan simple como cuando alguien hacia algo que no me gusta, mi primera reacción 
+                        solía ser un comentario sarcástico o un enfado silencioso que solo acumulaba rencor. Ahora entiendo 
+                        que es más sano y efectivo decir con calma: "Me siento frustrado cuando hacen algo que no me gusta, 
+                        porque siento que la responsabilidad de los actos solo la tengo yo. Te agradecería que hablaramos de 
+                        las acciones que ambos estamos de acuerdo". Este pequeño cambio, el hablar desde mi sentir y proponer una 
+                        solución en lugar de lanzar una acusación, ha transformado la manera en que me relaciono, cuidando mi paz mental y fortaleciendo mis vínculos.
                     </p>
                 </div>
 
                 <!-- Reflexión de Camila Ceballos -->
-                <div id="camila-ceballos" class="reflection-card">
+                <div class="reflection-card fade-in">
                     <div class="reflection-header">
                         <img src="img/CamilaFoto.jpg" alt="Foto de Camila Ceballos" class="reflection-photo">
                         <h2 class="reflection-name">Camila Ceballos</h2>
@@ -77,7 +86,7 @@
                 </div>
 
                 <!-- Reflexión de Samuel Carmona -->
-                <div id="samuel-carmona" class="reflection-card">
+                <div class="reflection-card fade-in">
                     <div class="reflection-header">
                         <img src="img/SamuelFoto.jfif" alt="Foto de Samuel Carmona" class="reflection-photo">
                         <h2 class="reflection-name">Samuel Carmona</h2>
@@ -94,6 +103,7 @@
 
     </div>
 
+    <script src="reflexiones.js"></script>
 </body>
 
 </html>
